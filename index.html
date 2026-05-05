@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ryuu Dashboard - Utility Edition</title>
-    <!-- Giữ nguyên phần CSS của bạn -->
     <style>
         :root { 
             --text: #ffffff; 
@@ -14,8 +13,10 @@
             --cal-radius: 15px;
             --app-radius: 15px;
             --note-radius: 15px;
+            /* Biến mới cho kích cỡ ứng dụng */
             --app-size: 60px;
         }
+
         body {
             margin: 0; padding: 0;
             font-family: 'Segoe UI', system-ui, sans-serif;
@@ -26,38 +27,71 @@
             overflow: hidden;
             transition: background 0.5s ease;
         }
-        .top-left-calendar { position: absolute; top: 20px; left: 20px; width: 220px; background: var(--bg-glass); backdrop-filter: blur(var(--blur-val)); border-radius: var(--cal-radius); padding: 12px; border: 1px solid rgba(255,255,255,0.1); z-index: 100; }
+
+        .top-left-calendar {
+            position: absolute; top: 20px; left: 20px; width: 220px;
+            background: var(--bg-glass); backdrop-filter: blur(var(--blur-val));
+            border-radius: var(--cal-radius); padding: 12px; border: 1px solid rgba(255,255,255,0.1); z-index: 100;
+        }
         .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
         #calMonthYear { font-size: 1rem; font-weight: 700; }
         .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; }
         .cal-grid div { height: 25px; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; }
         .today { background: var(--accent); color: #000 !important; font-weight: bold; border-radius: 50%; width: 22px; height: 22px; }
-        .bottom-left-notes { position: absolute; bottom: 20px; left: 20px; width: 220px; background: var(--bg-glass); backdrop-filter: blur(var(--blur-val)); border-radius: var(--note-radius); padding: 12px; border: 1px solid rgba(255,255,255,0.1); z-index: 100; }
-        .bottom-left-notes textarea { width: 100%; height: 100px; background: transparent; border: none; color: #fff; resize: none; outline: none; font-size: 0.85rem; font-family: inherit; }
+
+        .bottom-left-notes {
+            position: absolute; bottom: 20px; left: 20px; width: 220px;
+            background: var(--bg-glass); backdrop-filter: blur(var(--blur-val));
+            border-radius: var(--note-radius); padding: 12px; border: 1px solid rgba(255,255,255,0.1); z-index: 100;
+        }
+        .bottom-left-notes textarea {
+            width: 100%; height: 100px; background: transparent; border: none; color: #fff; 
+            resize: none; outline: none; font-size: 0.85rem; font-family: inherit;
+        }
+
         .top-right-weather { position: absolute; top: 20px; right: 20px; text-align: right; z-index: 100; }
         .weather-mini { background: var(--bg-glass); backdrop-filter: blur(var(--blur-val)); padding: 10px 15px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); }
+
         .main-content { display: flex; flex-direction: column; align-items: center; margin-top: 35px; width: 100%; z-index: 10; }
         #mainTitle { margin: 0; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; line-height: 1.1; }
         #clock { margin: 0 0 20px 0; font-weight: 200; line-height: 1; }
-        .search-box input { width: clamp(300px, 45vw, 500px); padding: 12px 20px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.2); background: var(--bg-glass); color: inherit; outline: none; backdrop-filter: blur(var(--blur-val)); text-align: center; font-size: 0.95rem; }
+
+        .search-box input {
+            width: clamp(300px, 45vw, 500px); padding: 12px 20px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.2);
+            background: var(--bg-glass); color: inherit; outline: none; backdrop-filter: blur(var(--blur-val)); text-align: center; font-size: 0.95rem;
+        }
+
         .app-container { width: 80%; max-width: 1100px; margin-top: 50px; padding: 20px; display: flex; justify-content: center; }
+        /* Tự động điều chỉnh lưới theo kích cỡ icon */
         .app-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(calc(var(--app-size) + 50px), 1fr)); gap: 25px; width: 100%; justify-items: center; }
         .app { position: relative; text-align: center; cursor: grab; width: fit-content; padding: 10px; border-radius: var(--app-radius); transition: background 0.2s; }
+        
+        /* Sử dụng biến --app-size cho icon */
         .app img { width: var(--app-size); height: var(--app-size); border-radius: calc(var(--app-radius) - 5px); background: #fff; padding: 5px; pointer-events: none; object-fit: contain; }
+        
         .app div { margin-top: 10px; font-size: 0.85rem; font-weight: 500; pointer-events: none; }
         .del-btn { position: absolute; top: -5px; right: -5px; background: #ff4757; color: white; border: none; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; opacity: 0; z-index: 5; }
         .app:hover .del-btn { opacity: 1; }
         .app:hover { background: rgba(255,255,255,0.1); }
-        .panel { position: fixed; right: -340px; top: 0; height: 100vh; width: 300px; background: rgba(15, 15, 15, 0.98); padding: 25px; transition: 0.4s; z-index: 2000; overflow-y: auto; color: #fff; box-shadow: -10px 0 30px rgba(0,0,0,0.5); padding-bottom: 80px; box-sizing: border-box; }
+
+        .panel { 
+            position: fixed; right: -340px; top: 0; height: 100vh; width: 300px; 
+            background: rgba(15, 15, 15, 0.98); padding: 25px; 
+            transition: 0.4s; z-index: 2000; 
+            overflow-y: auto; color: #fff; box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+            padding-bottom: 80px; box-sizing: border-box;
+        }
         .panel.active { right: 0; }
+
         .quick-bg { display: flex; gap: 10px; margin: 10px 0 20px 0; }
         .bg-thumb { width: 65px; height: 65px; border-radius: 10px; cursor: pointer; border: 2px solid transparent; background-size: cover; background-position: center; transition: 0.2s; }
         .bg-thumb:hover { border-color: var(--accent); }
+
         label { display: block; margin-top: 15px; font-size: 0.85rem; color: #aaa; text-transform: uppercase; font-weight: bold; }
         input[type="text"], input[type="range"], input[type="color"] { width: 100%; padding: 12px; margin-top: 8px; border-radius: 10px; border: 1px solid #333; background: #222; color: #fff; box-sizing: border-box; }
         .add-btn { background: var(--accent); color: #000; border: none; padding: 14px; width: 100%; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 20px; }
+
         .toggle-btn { position: fixed; bottom: 25px; right: 25px; width: 60px; height: 60px; border-radius: 50%; background: var(--accent); border: none; cursor: pointer; z-index: 2100; font-size: 26px; box-shadow: 0 5px 20px rgba(0,242,255,0.4); }
-        #dbStatus { position: absolute; bottom: -15px; left: 0; font-size: 10px; opacity: 0.5; }
     </style>
 </head>
 <body>
@@ -74,7 +108,6 @@
 <div class="bottom-left-notes">
     <div style="font-size: 0.7rem; font-weight: bold; margin-bottom: 5px; color: var(--accent);">GHI CHÚ</div>
     <textarea id="quickNote" placeholder="Viết gì đó..."></textarea>
-    <div id="dbStatus">Đám mây: Đang kiểm tra...</div>
 </div>
 
 <div class="top-right-weather">
@@ -107,7 +140,7 @@
     <label>Bo góc Lịch (<span id="calRadVal">15</span>px)</label>
     <input type="range" min="0" max="50" value="15" oninput="updateStyleVar('--cal-radius', this.value + 'px', 'calRadVal', 'ryuu_cal_rad')">
 
-    <label>Bo góc Ứng dụng (<span id="appRadiusVal">15</span>px)</label>
+    <label>Bo góc Ứng dụng (<span id="appRadVal">15</span>px)</label>
     <input type="range" min="0" max="50" value="15" oninput="updateStyleVar('--app-radius', this.value + 'px', 'appRadVal', 'ryuu_app_rad')">
 
     <label>Độ mờ (Blur: <span id="blurVal">15</span>px)</label>
@@ -121,7 +154,7 @@
     </div>
 
     <label>Link hình nền tùy chỉnh</label>
-    <input type="text" id="bgInput" placeholder="Dán URL ảnh..." onchange="setBg(this.value)">
+    <input type="text" id="bgInput" placeholder="Dán URL ảnh...">
 
     <label>Màu chữ Dashboard</label>
     <input type="color" id="textColorPicker" value="#ffffff" oninput="setTextColor(this.value)">
@@ -146,81 +179,14 @@
 
 <button class="toggle-btn" onclick="document.getElementById('settingsPanel').classList.toggle('active')">⚙️</button>
 
-<!-- TÍCH HỢP FIREBASE SDK -->
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-
-    // Cấu hình từ hình ảnh bạn cung cấp
-    const firebaseConfig = {
-      apiKey: "AIzaSyAdSzupKsSgd_SNMocyJZMSdlcQSChl73o",
-      authDomain: "ryuu-dashboard.firebaseapp.com",
-      databaseURL: "https://ryuu-dashboard-default-rtdb.firebaseio.com",
-      projectId: "ryuu-dashboard",
-      storageBucket: "ryuu-dashboard.firebasestorage.app",
-      messagingSenderId: "554256636143",
-      appId: "1:554256636143:web:ddaf527584dcf3e814e31a",
-      measurementId: "G-4D0WS9HLQV"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-    const dbRef = ref(db, 'dashboard_data');
-
-    // Hàm đồng bộ lên Firebase
-    window.syncToCloud = function() {
-        const data = {
-            apps: JSON.parse(localStorage.getItem('ryuu_apps')),
-            bg: localStorage.getItem('ryuu_bg'),
-            accent: localStorage.getItem('ryuu_accent'),
-            title: localStorage.getItem('ryuu_title'),
-            note: localStorage.getItem('ryuu_note'),
-            style: {
-                blur: localStorage.getItem('ryuu_blur'),
-                cal_rad: localStorage.getItem('ryuu_cal_rad'),
-                app_rad: localStorage.getItem('ryuu_app_rad'),
-                app_size: localStorage.getItem('ryuu_app_size'),
-                title_size: localStorage.getItem('ryuu_title_size'),
-                clock_size: localStorage.getItem('ryuu_clock_size'),
-                text_color: localStorage.getItem('ryuu_text_color')
-            }
-        };
-        set(dbRef, data).then(() => {
-            document.getElementById('dbStatus').innerText = "Đám mây: Đã đồng bộ lúc " + new Date().toLocaleTimeString();
-        });
-    }
-
-    // Lắng nghe dữ liệu từ Firebase
-    onValue(dbRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-            if (data.apps) localStorage.setItem('ryuu_apps', JSON.stringify(data.apps));
-            if (data.bg) localStorage.setItem('ryuu_bg', data.bg);
-            if (data.accent) localStorage.setItem('ryuu_accent', data.accent);
-            if (data.title) localStorage.setItem('ryuu_title', data.title);
-            if (data.note) localStorage.setItem('ryuu_note', data.note);
-            if (data.style) {
-                Object.keys(data.style).forEach(key => {
-                    localStorage.setItem('ryuu_' + key, data.style[key]);
-                });
-            }
-            // Không reload nếu đang nhập ghi chú để tránh mất tiêu điểm
-            if (document.activeElement !== document.getElementById('quickNote')) {
-                // Tải lại các thành phần giao diện mà không cần reload trang
-                applyStoredSettings();
-            }
-        }
-    });
-</script>
-
 <script>
-    // Giữ nguyên logic các hàm của bạn nhưng thêm syncToCloud() vào cuối
     let apps = JSON.parse(localStorage.getItem('ryuu_apps')) || [
         {name: "Youtube", url: "https://youtube.com"},
         {name: "Facebook", url: "https://facebook.com"},
         {name: "ChatGPT", url: "https://chatgpt.com"}
     ];
     let currentCalDate = new Date();
+    let dragSrcEl = null;
 
     async function updateWeather() {
         try {
@@ -234,16 +200,25 @@
     }
 
     const noteArea = document.getElementById('quickNote');
-    noteArea.oninput = () => {
-        localStorage.setItem('ryuu_note', noteArea.value);
-        if(window.syncToCloud) syncToCloud();
-    };
+    noteArea.value = localStorage.getItem('ryuu_note') || "";
+    noteArea.oninput = () => localStorage.setItem('ryuu_note', noteArea.value);
 
-    function saveAndRender() { 
-        localStorage.setItem('ryuu_apps', JSON.stringify(apps)); 
-        renderApps(); 
-        if(window.syncToCloud) syncToCloud();
+    function handleDragStart(e) { dragSrcEl = this; e.dataTransfer.effectAllowed = 'move'; this.style.opacity = '0.4'; }
+    function handleDragOver(e) { if (e.preventDefault) e.preventDefault(); return false; }
+    function handleDrop(e) {
+        if (e.stopPropagation) e.stopPropagation();
+        if (dragSrcEl !== this) {
+            const all = Array.from(document.querySelectorAll('.app'));
+            const from = all.indexOf(dragSrcEl);
+            const to = all.indexOf(this);
+            const movedItem = apps.splice(from, 1)[0];
+            apps.splice(to, 0, movedItem);
+            saveAndRender();
+        }
+        return false;
     }
+    function handleDragEnd() { this.style.opacity = '1'; }
+    function saveAndRender() { localStorage.setItem('ryuu_apps', JSON.stringify(apps)); renderApps(); }
 
     function renderApps() {
         const grid = document.getElementById('appGrid');
@@ -255,6 +230,8 @@
                            <img src="https://www.google.com/s2/favicons?domain=${app.url}&sz=128">
                            <div>${app.name}</div>`;
             d.onclick = () => window.open(app.url, '_blank');
+            d.addEventListener('dragstart', handleDragStart); d.addEventListener('dragover', handleDragOver);
+            d.addEventListener('drop', handleDrop); d.addEventListener('dragend', handleDragEnd);
             grid.appendChild(d);
         });
     }
@@ -274,57 +251,16 @@
     }
     function changeMonth(dir) { currentCalDate.setMonth(currentCalDate.getMonth() + dir); renderCalendar(); }
 
-    function setBg(url) { 
-        document.body.style.backgroundImage = `url('${url}')`; 
-        localStorage.setItem('ryuu_bg', url);
-        if(window.syncToCloud) syncToCloud();
-    }
-    function setTextColor(color) { 
-        document.body.style.color = color; 
-        localStorage.setItem('ryuu_text_color', color);
-        if(window.syncToCloud) syncToCloud();
-    }
-    function updateTitle(val) { 
-        document.getElementById('mainTitle').innerText = val || "RYUU DRAGON"; 
-        localStorage.setItem('ryuu_title', val);
-        if(window.syncToCloud) syncToCloud();
-    }
-    function updateAccent(color) { 
-        document.documentElement.style.setProperty('--accent', color); 
-        localStorage.setItem('ryuu_accent', color);
-        if(window.syncToCloud) syncToCloud();
-    }
-    function updateFontSize(id, size, spanId, key) { 
-        document.getElementById(id).style.fontSize = size + "px"; 
-        if(document.getElementById(spanId)) document.getElementById(spanId).innerText = size; 
-        localStorage.setItem(key, size);
-        if(window.syncToCloud) syncToCloud();
-    }
+    function setBg(url) { document.body.style.backgroundImage = `url('${url}')`; localStorage.setItem('ryuu_bg', url); }
+    function setTextColor(color) { document.body.style.color = color; localStorage.setItem('ryuu_text_color', color); }
+    function updateTitle(val) { document.getElementById('mainTitle').innerText = val || "RYUU DRAGON"; localStorage.setItem('ryuu_title', val); }
+    function updateAccent(color) { document.documentElement.style.setProperty('--accent', color); localStorage.setItem('ryuu_accent', color); }
+    function updateFontSize(id, size, spanId, key) { document.getElementById(id).style.fontSize = size + "px"; document.getElementById(spanId).innerText = size; localStorage.setItem(key, size); }
     
     function updateStyleVar(varName, value, spanId, storageKey) {
         document.documentElement.style.setProperty(varName, value);
-        if(spanId && document.getElementById(spanId)) document.getElementById(spanId).innerText = parseInt(value);
+        if(spanId) document.getElementById(spanId).innerText = parseInt(value);
         localStorage.setItem(storageKey, value);
-        if(window.syncToCloud) syncToCloud();
-    }
-
-    function applyStoredSettings() {
-        const bg = localStorage.getItem('ryuu_bg') || 'https://images.unsplash.com/photo-1477346611705-65d1883cee1e?q=80&w=2070';
-        document.body.style.backgroundImage = `url('${bg}')`;
-        document.body.style.color = localStorage.getItem('ryuu_text_color') || '#ffffff';
-        document.getElementById('mainTitle').innerText = localStorage.getItem('ryuu_title') || 'RYUU DRAGON';
-        document.documentElement.style.setProperty('--accent', localStorage.getItem('ryuu_accent') || '#00f2ff');
-        document.getElementById('quickNote').value = localStorage.getItem('ryuu_note') || "";
-        
-        updateStyleVar('--blur-val', localStorage.getItem('ryuu_blur') || '15px', 'blurVal', 'ryuu_blur');
-        updateStyleVar('--cal-radius', localStorage.getItem('ryuu_cal_rad') || '15px', 'calRadVal', 'ryuu_cal_rad');
-        updateStyleVar('--app-radius', localStorage.getItem('ryuu_app_rad') || '15px', 'appRadVal', 'ryuu_app_rad');
-        updateStyleVar('--app-size', localStorage.getItem('ryuu_app_size') || '60px', 'appSizeVal', 'ryuu_app_size');
-        updateFontSize('mainTitle', localStorage.getItem('ryuu_title_size') || '49', 'titleSizeVal', 'ryuu_title_size');
-        updateFontSize('clock', localStorage.getItem('ryuu_clock_size') || '80', 'clockSizeVal', 'ryuu_clock_size');
-        
-        apps = JSON.parse(localStorage.getItem('ryuu_apps')) || apps;
-        renderApps(); renderCalendar();
     }
 
     function addNewApp() {
@@ -339,8 +275,21 @@
     function deleteApp(e, index) { e.stopPropagation(); apps.splice(index, 1); saveAndRender(); }
 
     window.onload = () => {
-        applyStoredSettings();
-        updateWeather();
+        setBg(localStorage.getItem('ryuu_bg') || 'https://images.unsplash.com/photo-1477346611705-65d1883cee1e?q=80&w=2070');
+        setTextColor(localStorage.getItem('ryuu_text_color') || '#ffffff');
+        updateTitle(localStorage.getItem('ryuu_title') || 'RYUU DRAGON');
+        updateAccent(localStorage.getItem('ryuu_accent') || '#00f2ff');
+        
+        updateStyleVar('--blur-val', localStorage.getItem('ryuu_blur') || '15px', 'blurVal', 'ryuu_blur');
+        updateStyleVar('--cal-radius', localStorage.getItem('ryuu_cal_rad') || '15px', 'calRadVal', 'ryuu_cal_rad');
+        updateStyleVar('--app-radius', localStorage.getItem('ryuu_app_rad') || '15px', 'appRadVal', 'ryuu_app_rad');
+        // Load kích thước biểu tượng ứng dụng
+        updateStyleVar('--app-size', localStorage.getItem('ryuu_app_size') || '60px', 'appSizeVal', 'ryuu_app_size');
+
+        updateFontSize('mainTitle', localStorage.getItem('ryuu_title_size') || '49', 'titleSizeVal', 'ryuu_title_size');
+        updateFontSize('clock', localStorage.getItem('ryuu_clock_size') || '80', 'clockSizeVal', 'ryuu_clock_size');
+
+        renderApps(); renderCalendar(); updateWeather();
         setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString('vi-VN'); }, 1000);
     };
 
@@ -349,4 +298,4 @@
     };
 </script>
 </body>
-</html> 
+</html>
